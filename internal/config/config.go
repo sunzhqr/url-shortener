@@ -1,15 +1,16 @@
 package config
 
 import (
-	"github.com/ilyakaznacheev/cleanenv"
 	"log"
 	"os"
 	"time"
+
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
 	Env         string `yaml:"env" env-default:"local"`
-	StoragePath string `yaml:"storage_path" env-required:"true"`
+	StoragePath string `yaml:"strorage_path"` // add env-required:"true" to make it required
 	HTTPServer  `yaml:"http_server"`
 }
 
@@ -20,20 +21,19 @@ type HTTPServer struct {
 }
 
 func MustLoad() *Config {
-	configPath := os.Getenv("CONFIG-PATH")
+	// configPath := os.Getenv("./config/local.yaml")
+	configPath := "../../config/local.yaml"
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH is not set")
 	}
-
-	//check if file exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		log.Fatalf("config file does not exist: %s", configPath)
+		log.Fatalf("config file doesn't exist: %s", configPath)
 	}
 
 	var cfg Config
 
 	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
-		log.Fatalf("cannot read config: %s", err)
+		log.Fatalf("cannot read config file: %s", err)
 	}
 
 	return &cfg
